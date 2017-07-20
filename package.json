@@ -1,0 +1,26 @@
+{
+  "name": "doordash-chat",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Raul Rivero",
+  "description": "The Frontend take home project for DoorDash",
+  "license": "ISC",
+  "devDependencies": {
+    "react-scripts": "1.0.10",
+    "serve": "^3.1.0",
+    "express": "^4.0.0",
+    "body-parser": "^1.0.1"
+  },
+  "dependencies": {
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "shortid": "^2.2.8"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "api-server": "node server.js"
+  }
+}
