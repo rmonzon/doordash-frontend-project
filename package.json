@@ -35,11 +35,14 @@
     "react-router-dom": "^4.1.2",
     "redux": "^3.7.2",
     "redux-devtools": "^3.4.0",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.2.0",
     "sass-loader": "^6.0.6",
     "shortid": "^2.2.8",
     "style-loader": "^0.18.2",
     "webpack": "^3.3.0",
-    "webpack-dev-server": "^2.5.1"
+    "webpack-dev-server": "^2.5.1",
+    "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
     "start": "webpack-dev-server",

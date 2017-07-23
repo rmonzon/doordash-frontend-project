@@ -1,35 +1,24 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { addTodo } from '../actions';
+import React, { Component } from 'react';
+import {connect} from 'react-redux';
 
-let AddTodo = ({ dispatch }) => {
-  let input
+import doGetRoomsAsync from '../actions/doGetRoomsAsync';
+import ChatRoom from '../components/ChatRoom';
+import selector from '../reducers';
 
-  return (
-    <div>
-      <form
-        onSubmit={e => {
-          e.preventDefault()
-          if (!input.value.trim()) {
-            return
-          }
-          dispatch(addTodo(input.value))
-          input.value = ''
-        }}
-      >
-        <input
-          ref={node => {
-            input = node
-          }}
-        />
-        <button type="submit">
-          Add Todo
-        </button>
-      </form>
-    </div>
-  )
+const mapDispatchToProps = dispatch => ({
+  doGetRoomsAsync() {
+    dispatch(doGetRoomsAsync());
+  }
+});
+
+const mapStateToProps = state => {
+  return {
+    rooms: state.rooms,
+    hasFailed: state.roomsHasFailed,
+    isLoading: state.roomsIsLoading,
+  };
 };
 
-AddTodo = connect()(AddTodo);
+const ChatRoomContainer = connect(mapStateToProps, mapDispatchToProps)(ChatRoom);
 
-export default AddTodo;
+export default ChatRoomContainer;

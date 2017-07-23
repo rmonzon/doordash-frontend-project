@@ -1,10 +1,9 @@
 import { combineReducers } from 'redux'
-import login from '../../login/reducers';
-import chatRoom from '../../chatroom/reducers';
+// import login from '../../login/reducers';
+import {roomsHasFailed, roomsIsLoading, rooms} from '../../chatroom/reducers/chatroom';
 
-const chatApp = combineReducers({
-  login,
-  chatRoom
+export default combineReducers({
+  roomsHasFailed,
+  roomsIsLoading,
+  rooms
 });
-
-export default chatApp;

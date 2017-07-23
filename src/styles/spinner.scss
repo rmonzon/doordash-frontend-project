@@ -7,7 +7,7 @@
   border-radius: 50%;
   background: #ff1940;
   background: linear-gradient(to right, #ff1940 10%, rgba(255, 255, 255, 0) 42%);
-  animation: load3 1.4s infinite linear;
+  animation: load3 .8s infinite linear;
   transform: translateZ(0);
 
   &::before {
@@ -22,7 +22,7 @@
   }
 
   &:after {
-    background: white;
+    background: #eff1f2;
     width: 75%;
     height: 75%;
     border-radius: 50%;
