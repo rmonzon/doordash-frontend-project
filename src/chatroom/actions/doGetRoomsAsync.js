@@ -10,13 +10,11 @@ export default () => {
     dispatch(requestIsLoading(true));
 
     try {
-      const response = await fetch('http://localhost:8080/api/rooms');
+      const response = await fetch(`http://localhost:8081/api/rooms`);
       const json = await response.json();
       // dispatch(create(SUCCESS, json));
-      setTimeout(() => {
-        dispatch(requestIsLoading(false));
-        dispatch(requestSuccess(json));
-      }, 1000);
+      dispatch(requestIsLoading(false));
+      dispatch(requestSuccess(json));
       // dispatch(requestSuccess(json));
     } catch (e) {
       // dispatch(create(FAILURE, e.message));

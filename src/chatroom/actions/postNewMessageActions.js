@@ -1,23 +1,23 @@
-import {REQUEST_ROOMS} from '../constants';
+import {POST_NEW_MESSAGE} from '../constants';
 import {FETCHING, SUCCESS, FAILURE} from '../../core/constants';
 
 export function requestHasFailed(bool) {
   return {
-    type: `${REQUEST_ROOMS}_${FAILURE}`,
+    type: `${POST_NEW_MESSAGE}_${FAILURE}`,
     hasFailed: bool
   };
 }
 
 export function requestIsLoading(bool) {
   return {
-    type: `${REQUEST_ROOMS}_${FETCHING}`,
+    type: `${POST_NEW_MESSAGE}_${FETCHING}`,
     isLoading: bool
   };
 }
 
 export function requestSuccess(payload) {
   return {
-    type: `${REQUEST_ROOMS}_${SUCCESS}`,
-    rooms: payload
+    type: `${POST_NEW_MESSAGE}_${SUCCESS}`,
+    roomInfo: payload
   };
 }

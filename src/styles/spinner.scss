@@ -1,3 +1,5 @@
+@import 'variables';
+
 .spinner {
   font-size: 10px;
   text-indent: -9999em;
@@ -5,15 +7,15 @@
   height: 40px;
   position: absolute;
   border-radius: 50%;
-  background: #ff1940;
-  background: linear-gradient(to right, #ff1940 10%, rgba(255, 255, 255, 0) 42%);
-  animation: load3 .8s infinite linear;
+  background: $color-secondary;
+  background: linear-gradient(to right, $color-secondary 10%, rgba(255, 255, 255, 0) 42%);
+  animation: spin .8s infinite linear;
   transform: translateZ(0);
 
   &::before {
     width: 50%;
     height: 50%;
-    background: #ff1940;
+    background: $color-secondary;
     border-radius: 100% 0 0 0;
     position: absolute;
     top: 0;
@@ -22,7 +24,7 @@
   }
 
   &:after {
-    background: #eff1f2;
+    background: $color-primary;
     width: 75%;
     height: 75%;
     border-radius: 50%;
@@ -36,7 +38,7 @@
   }
 }
 
-@keyframes load3 {
+@keyframes spin {
   0% {
     transform: rotate(0deg);
   }

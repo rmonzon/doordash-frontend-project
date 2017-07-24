@@ -6,7 +6,7 @@ const shortid = require('shortid');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8081;
 
 const router = express.Router();
 
@@ -25,7 +25,19 @@ router.use(function(req, res, next) {
 
 // Simple in memory database
 const database = [
-  { name: 'Tea Chats', id: 0, users: ['Ryan','Nick, Ashwin'], messages: [{name: 'Ryan', message: 'ayyyyy', id: 'gg35545', reaction: null},{name: 'Nick', message: 'lmao', id: 'yy35578', reaction: null}]},
+  {
+    name: 'Tea Chats',
+    id: 0,
+    users: ['Ryan', 'Nick, Ashwin'],
+    messages: [
+      {name: 'Ryan', message: 'ayyyyy', id: 'gg35545', reaction: null},
+      {name: 'Nick', message: 'lmao', id: 'yy35578', reaction: null},
+      {name: 'Ashwin', message: `Hey guys, how's it going?`, id: 'aa36558', reaction: null},
+      {name: 'Nick', message: 'Hey Ashwin, where have you been?', id: 'yy15578', reaction: null},
+      {name: 'Ashwin', message: `I was doing a little road trip in europe!` , id: 'aa25545', reaction: null},
+      {name: 'Ashwin', message: `It was awesome!` , id: 'aa23345', reaction: null}
+    ]
+  },
   { name: 'Coffee Chats', id: 1, users: ['Abdul, Danielle'], messages: [{name: 'Abdul', message: 'ayy', id: 'ff35278', reaction: null}]},
   { name: 'Beer Chats', id: 2, users: ['Quintin, Ryan, Nick, Mark, Abdul, Danielle, Ashwin'], messages: [{name: 'Abdul', message: 'ayy', id: 'ff35278', reaction: null}]},
   { name: 'Wine Chats', id: 3, users: ['Cindy, Danielle, Nick'], messages: [{name: 'Abdul', message: 'ayy', id: 'ff35278', reaction: null}]},

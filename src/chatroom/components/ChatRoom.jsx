@@ -4,82 +4,123 @@ import cx from 'classnames';
 
 import Room from '../containers/Room';
 import RoomsList from './RoomsList';
+import MessagesList from './MessagesList';
+import TypingBox from './TypingBox';
 import Spinner from '../../core/components/Spinner';
 import '../../styles/login.scss';
 import avatar from '../../images/avatar.png';
 
+const username = 'Raul Rivero';
+
 class ChatRoom extends Component {
   state = {
-    selectedRoom: {}
+    rooms: [],
+    selectedRoom: {},
+    indexSelectedRoom: 0
   };
 
   componentDidMount() {
-    const {doGetRoomsAsync} = this.props;
+    const {
+      doGetRoomsAsync,
+      doGetRoomInfoAsync,
+      doGetRoomMessagesAsync
+    } = this.props;
+    // Simulate server response delay
     doGetRoomsAsync();
+    doGetRoomInfoAsync(0);
+    doGetRoomMessagesAsync(0);
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
-    this.setState({selectedRoom: nextProps.rooms[0]});
+    const {roomMsg, roomInfo} = nextProps;
+    const {indexSelectedRoom} = this.state;
+    if (roomMsg.length > 0) {
+      this.setSelectedRoom(nextProps.rooms, indexSelectedRoom, roomInfo.users, roomMsg);
+    }
   }
 
-  handleOnSubmit = e => {
-    e.preventDefault();
-
-    console.log('here');
+  handleOnSubmit = msgBody => {
+    const newMsgList = this.state.selectedRoom.messages;
+    const {rooms, indexSelectedRoom} = this.state;
+    const {doPostNewMessageAsync} = this.props;
+    const newMessage = {
+      id: 'H1l-B17Ib',
+      name: username,
+      message: msgBody
+    };
+    newMsgList.push(newMessage);
+    rooms[indexSelectedRoom]['messages'] = newMsgList;
+    this.setState({selectedRoom: rooms[indexSelectedRoom]});
+    // we send the POST request to insert a new message
+    doPostNewMessageAsync(rooms[indexSelectedRoom].id, newMessage);
   };
 
   handleClickRoom = e => {
+    const {
+      doGetRoomInfoAsync,
+      doGetRoomMessagesAsync
+    } = this.props;
     const index = Number(e.target.id);
-    const {rooms} = this.props;
+    doGetRoomInfoAsync(index);
+    doGetRoomMessagesAsync(index);
+    this.setState({indexSelectedRoom: index});
+  };
+
+  setSelectedRoom = (rooms, index, users, messages) => {
     rooms.map(room => room['selected'] = false);
     rooms[index]['selected'] = true;
-    this.setState({selectedRoom: rooms[index]});
+    if (users) {
+      rooms[index]['users'] = users;
+    }
+    if (messages) {
+      rooms[index]['messages'] = messages;
+    }
+    this.setState({selectedRoom: rooms[index], rooms});
   };
 
   render() {
     const {selectedRoom} = this.state;
-    const {rooms, isLoading} = this.props;
+    const roomMessages = selectedRoom.messages || [];
+    const {rooms, roomsIsLoading, roomMsgIsLoading} = this.props;
     return (
       <div className="chat__container">
         <div className="chat__left-panel">
-          <div className={cx({'chat__avatar-container': !isLoading, 'chat__avatar--no-data': isLoading})}>
-            <img src={avatar} className={cx({'chat__avatar-img': !isLoading, 'chat__img--no-data': isLoading})} />
-            {
-              !isLoading &&
+          <div className={cx({'chat__avatar-container': !roomsIsLoading, 'chat__avatar--no-data': roomsIsLoading})}>
+            <img src={avatar} className={cx({'chat__avatar-img': !roomsIsLoading, 'chat__img--no-data': roomsIsLoading})} />
+            {!roomsIsLoading &&
               <div className="chat__avatar-mask">
                 <small>Change</small>
               </div>
             }
           </div>
-          {
-            isLoading ?
+          {roomsIsLoading ?
               <div className="chat__username--no-data" /> :
               <div>
-                <h2 className="chat__username">Raul Rivero</h2>
+                <h2 className="chat__username">{username}</h2>
                 <h6>Online for 12 minutes</h6>
               </div>
           }
-          <RoomsList isDataReady={!isLoading} rooms={rooms} clickRoom={this.handleClickRoom} />
+          <RoomsList
+            isDataReady={!roomsIsLoading}
+            rooms={rooms}
+            clickRoom={this.handleClickRoom} />
         </div>
 
         <div className="chat__right-panel">
-          <Room isDataReady={!isLoading} room={selectedRoom} />
+          <Room
+            isDataReady={!roomMsgIsLoading}
+            room={selectedRoom}
+            loggedInUser={username} />
 
-          {isLoading ?
+          {roomMessages.length > 0 &&
+            <MessagesList
+              loggedInUser={username}
+              messages={roomMessages} />
+          }
+
+          {roomMsgIsLoading ?
             <Spinner classNames={'chat__spinner'} /> :
-            <form className="chat__input-container" onSubmit={this.handleOnSubmit}>
-              <div className="chat__input-col--left">
-                <input
-                  id="chat_input_message"
-                  type="text"
-                  className="input-field"
-                  placeholder="Type a message" />
-              </div>
-              <div className="chat__input-col--right">
-                <button type="submit" className="button button-link">Send</button>
-              </div>
-            </form>
+            <TypingBox onSubmit={this.handleOnSubmit} />
           }
         </div>
       </div>
@@ -89,7 +130,11 @@ class ChatRoom extends Component {
 
 ChatRoom.propTypes = {
   rooms: PropTypes.array.isRequired,
-  isLoading: PropTypes.bool.isRequired
+  roomsIsLoading: PropTypes.bool.isRequired,
+  roomInfo: PropTypes.object.isRequired,
+  roomInfoIsLoading: PropTypes.bool.isRequired,
+  roomMsg: PropTypes.array.isRequired,
+  roomMsgIsLoading: PropTypes.bool.isRequired
 };
 
 export default ChatRoom;

@@ -1,23 +1,18 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-// import doGetRoomInfoAsync from '../actions/doGetRoomInfoAsync';
+import doGetRoomInfoAsync from '../actions/doGetRoomInfoAsync';
 import Room from '../components/Room';
 
-const mapDispatchToProps = dispatch => {
-  return {};
-  // return ({
-  //   doGetRoomInfoAsync: (...args) => {
-  //     dispatch(doGetRoomInfoAsync(...args));
-  //   }
-  // })
-};
+const mapDispatchToProps = dispatch => ({
+
+});
 
 const mapStateToProps = state => {
   return {
-    // items: state.items,
-    // hasFailed: state.itemsHasErrored,
-    // isLoading: state.itemsIsLoading
+    roomInfo: state.roomInfo,
+    hasFailed: state.roomInfoHasFailed,
+    isLoading: state.roomInfoIsLoading,
   };
 };
 
