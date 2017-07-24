@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
+import shortid from 'shortid';
 
 import Room from '../containers/Room';
 import RoomsList from './RoomsList';
@@ -10,25 +11,34 @@ import Spinner from '../../core/components/Spinner';
 import '../../styles/login.scss';
 import avatar from '../../images/avatar.png';
 
-const username = 'Raul Rivero';
-
 class ChatRoom extends Component {
   state = {
     rooms: [],
+    userSession: {},
     selectedRoom: {},
     indexSelectedRoom: 0
   };
 
   componentDidMount() {
     const {
+      history,
       doGetRoomsAsync,
       doGetRoomInfoAsync,
       doGetRoomMessagesAsync
     } = this.props;
-    // Simulate server response delay
-    doGetRoomsAsync();
-    doGetRoomInfoAsync(0);
-    doGetRoomMessagesAsync(0);
+    const session = JSON.parse(sessionStorage.getItem('doordashChatSession'));
+    console.log(session);
+    // Check that the user has an active session, otherwise redirect back to login page
+    if (!session || !session.username) {
+      history.push('/');
+    }
+    else {
+      this.setState({userSession: session});
+      // Simulate server response delay
+      doGetRoomsAsync();
+      doGetRoomInfoAsync(0);
+      doGetRoomMessagesAsync(0);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -41,17 +51,16 @@ class ChatRoom extends Component {
 
   handleOnSubmit = msgBody => {
     const newMsgList = this.state.selectedRoom.messages;
-    const {rooms, indexSelectedRoom} = this.state;
+    const {rooms, indexSelectedRoom, userSession} = this.state;
     const {doPostNewMessageAsync} = this.props;
     const newMessage = {
-      id: 'H1l-B17Ib',
-      name: username,
+      id: shortid.generate(),
+      name: userSession.username,
       message: msgBody
     };
     newMsgList.push(newMessage);
     rooms[indexSelectedRoom]['messages'] = newMsgList;
     this.setState({selectedRoom: rooms[indexSelectedRoom]});
-    // we send the POST request to insert a new message
     doPostNewMessageAsync(rooms[indexSelectedRoom].id, newMessage);
   };
 
@@ -78,10 +87,39 @@ class ChatRoom extends Component {
     this.setState({selectedRoom: rooms[index], rooms});
   };
 
+  handleLogout = e => {
+    e.preventDefault();
+    const {history} = this.props;
+    sessionStorage.clear();
+    history.push('/');
+  };
+
+  // Calculates the online time in seconds from the login time until current time
+  computeOnlineTime = () => {
+    const {userSession} = this.state;
+    if (userSession.loginTime !== undefined) {
+      const diff = Math.abs(new Date(userSession.loginTime) - new Date(Date.now()));
+      return diff / 1000 | 0;
+    }
+    return 0;
+  };
+
+  // Converts the total amount of online seconds to the format 'HH hours MM minutes'
+  formatOnlineTime = () => {
+    const secs = this.computeOnlineTime();
+    const sec_num = parseInt(secs, 10);
+    const hours   = Math.floor(sec_num / 3600);
+    let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+
+    if (minutes < 10) {minutes = `0${minutes}`}
+    return hours > 0 ? `${hours} hour(s) ${minutes} minutes` : `${minutes} minutes`;
+  };
+
   render() {
-    const {selectedRoom} = this.state;
-    const roomMessages = selectedRoom.messages || [];
+    const {selectedRoom, userSession} = this.state;
     const {rooms, roomsIsLoading, roomMsgIsLoading} = this.props;
+    const roomMessages = selectedRoom.messages || [];
+    const onlineTime = this.formatOnlineTime();
     return (
       <div className="chat__container">
         <div className="chat__left-panel">
@@ -96,25 +134,32 @@ class ChatRoom extends Component {
           {roomsIsLoading ?
               <div className="chat__username--no-data" /> :
               <div>
-                <h2 className="chat__username">{username}</h2>
-                <h6>Online for 12 minutes</h6>
+                <h2 className="chat__username">{userSession.username}</h2>
+                <h6>Online for {onlineTime}</h6>
               </div>
           }
           <RoomsList
             isDataReady={!roomsIsLoading}
             rooms={rooms}
             clickRoom={this.handleClickRoom} />
+
+          <button
+            type="button"
+            className="button button-link chat__logout-button"
+            onClick={this.handleLogout}>
+            Log out
+          </button>
         </div>
 
         <div className="chat__right-panel">
           <Room
             isDataReady={!roomMsgIsLoading}
             room={selectedRoom}
-            loggedInUser={username} />
+            loggedInUser={userSession.username} />
 
           {roomMessages.length > 0 &&
             <MessagesList
-              loggedInUser={username}
+              loggedInUser={userSession.username}
               messages={roomMessages} />
           }
 

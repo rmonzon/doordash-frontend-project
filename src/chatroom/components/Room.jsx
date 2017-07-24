@@ -32,12 +32,13 @@ class Room extends Component {
 }
 
 Room.defaultProps = {
-  room: {}
+  room: {},
+  loggedInUser: ''
 };
 
 Room.propTypes = {
   room: PropTypes.object,
-  loggedInUser: PropTypes.string.isRequired,
+  loggedInUser: PropTypes.string,
   isDataReady: PropTypes.bool.isRequired
 };
 

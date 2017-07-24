@@ -1,19 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Provider } from 'react-redux'
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { HashRouter, Switch, Route } from 'react-router-dom';
 
-import App from '../../App';
+import Login from '../../login/components/Login';
 import ChatRoom from '../../chatroom/containers/ChatRoom';
+
+// NOTE: using Hash history here for simplicity purposes (client-side rendering).
+// In a real production environment with server-side rendering we'd use browserHistory instead.
 
 const Root = ({ store }) => (
   <Provider store={store}>
-    <BrowserRouter>
+    <HashRouter>
       <Switch>
-        <Route exact path="/" component={ChatRoom} />
-        <Route exact path="/login" component={App} />
+        <Route path="/chat" component={ChatRoom} />
+        <Route path="/" component={Login} />
       </Switch>
-    </BrowserRouter>
+    </HashRouter>
   </Provider>
 );
 

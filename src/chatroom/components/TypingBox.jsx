@@ -24,6 +24,8 @@ class TypingBox extends Component {
           <input
             id="chat_input_message"
             type="text"
+            autoComplete="off"
+            autoFocus
             value={this.state.value}
             className="input-field"
             placeholder="Type a message" onChange={this.handleOnChange} />

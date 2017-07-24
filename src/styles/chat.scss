@@ -209,3 +209,16 @@
 .chat__room-user {
   color: $color-secondary;
 }
+
+.chat__logout-button {
+  color: #fff;
+  font-size: 14px;
+  width: auto;
+  position: fixed;
+  bottom: 10px;
+  left: 90px;
+
+  &:hover {
+    color: #b4b6b7 !important;
+  }
+}

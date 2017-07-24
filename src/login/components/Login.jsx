@@ -2,12 +2,25 @@ import React, { Component } from 'react';
 
 import Header from './Header';
 import Footer from './Footer';
-import Spinner from '../../core/components/Spinner';
 import '../../styles/login.scss';
 
 class Login extends Component {
   state = {
+    value: '',
     isLoading: false
+  };
+
+  componentDidMount() {
+    const {history} = this.props;
+    const session = JSON.parse(sessionStorage.getItem('doordashChatSession'));
+    // Check if user is already logged in, if it is, redirect to chat rooms page
+    if (session && session.username) {
+      history.push('/chat');
+    }
+  }
+
+  handleOnChange = e => {
+    this.setState({value: e.target.value});
   };
 
   handleOnSubmit = (e) => {
@@ -15,14 +28,26 @@ class Login extends Component {
 
     const {history} = this.props;
     this.setState({isLoading: true});
+    this.saveLoginToSessionStorage();
+    this.setState({value: ''});
 
     setTimeout(() => {
-      this.setState({isLoading: true});
-      history.push('/');
+      this.setState({isLoading: false});
+      history.push('/chat');
     }, 2000);
   };
 
+  saveLoginToSessionStorage = () => {
+    const {value} = this.state;
+    const doordashChatSession = {
+      username: value,
+      loginTime: Date.now()
+    };
+    sessionStorage.setItem('doordashChatSession', JSON.stringify(doordashChatSession));
+  };
+
   render() {
+    const {value, isLoading} = this.state;
     return (
       <div className="login-container">
         <Header />
@@ -33,9 +58,13 @@ class Login extends Component {
               id="user-name"
               name="username"
               type="text"
+              autoComplete="off"
+              autoFocus
+              value={value}
               className="input-field"
-              placeholder="Type your username..." />
-            <button type="submit" className="button button-default" disabled={this.state.isLoading}>
+              placeholder="Type your username..."
+              onChange={this.handleOnChange} />
+            <button type="submit" className="button button-default" disabled={isLoading}>
               Let's Go
             </button>
           </form>
