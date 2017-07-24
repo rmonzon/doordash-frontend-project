@@ -29,7 +29,6 @@ class Login extends Component {
     const {history} = this.props;
     this.setState({isLoading: true});
     this.saveLoginToSessionStorage();
-    this.setState({value: ''});
 
     setTimeout(() => {
       this.setState({isLoading: false});
@@ -61,11 +60,12 @@ class Login extends Component {
               autoComplete="off"
               autoFocus
               value={value}
+              disabled={isLoading}
               className="input-field"
               placeholder="Type your username..."
               onChange={this.handleOnChange} />
             <button type="submit" className="button button-default" disabled={isLoading}>
-              Let's Go
+              {isLoading ? `Signing in...` : `Let's Go`}
             </button>
           </form>
         </div>

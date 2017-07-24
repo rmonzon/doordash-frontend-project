@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
-class Room extends Component {
+class Room extends PureComponent {
 
   formatRoomNames = names => {
     if (names) {
@@ -25,7 +25,6 @@ class Room extends Component {
            :
           <div className="chat__room--no-data" />
         }
-
       </div>
     );
   }

@@ -8,12 +8,14 @@ import RoomsList from './RoomsList';
 import MessagesList from './MessagesList';
 import TypingBox from './TypingBox';
 import Spinner from '../../core/components/Spinner';
+import PanelButton from './PanelButton';
 import '../../styles/login.scss';
 import avatar from '../../images/avatar.png';
 
 class ChatRoom extends Component {
   state = {
     rooms: [],
+    isPanelOpen: true,
     userSession: {},
     selectedRoom: {},
     indexSelectedRoom: 0
@@ -27,7 +29,6 @@ class ChatRoom extends Component {
       doGetRoomMessagesAsync
     } = this.props;
     const session = JSON.parse(sessionStorage.getItem('doordashChatSession'));
-    console.log(session);
     // Check that the user has an active session, otherwise redirect back to login page
     if (!session || !session.username) {
       history.push('/');
@@ -111,18 +112,37 @@ class ChatRoom extends Component {
     const hours   = Math.floor(sec_num / 3600);
     let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
 
-    if (minutes < 10) {minutes = `0${minutes}`}
     return hours > 0 ? `${hours} hour(s) ${minutes} minutes` : `${minutes} minutes`;
   };
 
+  expandCloseRightPanel = () => {
+    this.setState({isPanelOpen: !this.state.isPanelOpen});
+  };
+
+  scrollToBottom = () => {
+    // Delay to wait for DOM element to be ready
+    setTimeout(() => {
+      const objDiv = document.querySelector('.messages__container');
+      if (objDiv) {
+        objDiv.scrollTop = objDiv.scrollHeight;
+      }
+    }, 100);
+  };
+
   render() {
-    const {selectedRoom, userSession} = this.state;
+    const {selectedRoom, userSession, isPanelOpen} = this.state;
     const {rooms, roomsIsLoading, roomMsgIsLoading} = this.props;
     const roomMessages = selectedRoom.messages || [];
     const onlineTime = this.formatOnlineTime();
+    if (!roomMsgIsLoading) {
+      this.scrollToBottom();
+    }
     return (
       <div className="chat__container">
-        <div className="chat__left-panel">
+        <div className={cx('chat__left-panel', {'minimized': !isPanelOpen})}>
+          <PanelButton
+            onOpenPanel={this.expandCloseRightPanel} />
+
           <div className={cx({'chat__avatar-container': !roomsIsLoading, 'chat__avatar--no-data': roomsIsLoading})}>
             <img src={avatar} className={cx({'chat__avatar-img': !roomsIsLoading, 'chat__img--no-data': roomsIsLoading})} />
             {!roomsIsLoading &&
@@ -131,13 +151,15 @@ class ChatRoom extends Component {
               </div>
             }
           </div>
+
           {roomsIsLoading ?
-              <div className="chat__username--no-data" /> :
-              <div>
-                <h2 className="chat__username">{userSession.username}</h2>
-                <h6>Online for {onlineTime}</h6>
-              </div>
+            <div className="chat__username--no-data" /> :
+            <div className="chat__username-container">
+              <h2 className="chat__username">{userSession.username}</h2>
+              <h6>Online for {onlineTime}</h6>
+            </div>
           }
+
           <RoomsList
             isDataReady={!roomsIsLoading}
             rooms={rooms}
@@ -150,19 +172,18 @@ class ChatRoom extends Component {
             Log out
           </button>
         </div>
-
         <div className="chat__right-panel">
           <Room
             isDataReady={!roomMsgIsLoading}
             room={selectedRoom}
             loggedInUser={userSession.username} />
-
-          {roomMessages.length > 0 &&
+          {
+            roomMessages.length > 0 &&
+            !roomMsgIsLoading &&
             <MessagesList
               loggedInUser={userSession.username}
               messages={roomMessages} />
           }
-
           {roomMsgIsLoading ?
             <Spinner classNames={'chat__spinner'} /> :
             <TypingBox onSubmit={this.handleOnSubmit} />
